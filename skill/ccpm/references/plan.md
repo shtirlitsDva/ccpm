@@ -57,6 +57,8 @@ created: <run: date -u +"%Y-%m-%dT%H:%M:%SZ">
 - Success criteria are measurable
 - Out of scope is explicitly listed
 
+**Before writing**: Tell the user: "Accept the file write — we'll review it with revdiff right after."
+
 **After writing**: Launch revdiff for inline review. Read `references/revdiff-review.md` and follow the review loop with `.claude/prds/<name>.md`. Process all annotations, update the PRD, and re-launch until the user quits without annotations.
 
 **After approval**: Confirm "✅ PRD approved: `.claude/prds/<name>.md`" and suggest: "Ready to create technical epic? Say: parse the <name> PRD"
@@ -104,6 +106,8 @@ github: (will be set on sync)
 - Aim for ≤10 tasks total — prefer simplicity over completeness.
 - Look for ways to leverage existing functionality before creating new code.
 - Identify parallelization opportunities in the task breakdown preview.
+
+**Before writing**: Tell the user: "Accept the file write — we'll review it with revdiff right after."
 
 **After writing**: Launch revdiff for inline review. Read `references/revdiff-review.md` and follow the review loop with `.claude/epics/<name>/epic.md`. Process all annotations, update the epic, and re-launch until the user quits without annotations.
 
