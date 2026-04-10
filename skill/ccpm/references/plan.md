@@ -22,6 +22,12 @@ Conduct a genuine brainstorming session before writing anything. Ask the user:
 - What's explicitly out of scope?
 - What are the constraints (tech, time, resources)?
 
+Interview the user relentlessly about every aspect of this plan until you reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one. For each question, provide your recommended answer.
+
+Ask the questions one at a time.
+
+If a question can be answered by exploring the codebase, explore the codebase instead.
+
 Then write `.claude/prds/<name>.md` with this frontmatter and structure:
 
 ```markdown

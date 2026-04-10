@@ -43,7 +43,7 @@ epic_number=$(gh issue create \
   --json number -q .number)
 ```
 
-**Step 2 — Create task sub-issues:**
+**Step 2 — Create task issues and link as sub-issues:**
 
 Check if `gh-sub-issue` extension is available:
 ```bash
@@ -64,8 +64,11 @@ task_number=$(gh issue create \
   --body-file /tmp/task-body.md \
   --label "task,epic:<name>" \
   --json number -q .number)
-# or with sub-issues:
-# gh sub-issue create --parent $epic_number ...
+
+# Link as sub-issue if extension is available
+if [ "$use_subissues" = true ]; then
+  gh sub-issue add "$epic_number" "$task_number" --repo "$REPO"
+fi
 ```
 
 **Step 3 — Rename task files and update references:**
