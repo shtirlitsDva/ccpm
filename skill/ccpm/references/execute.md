@@ -72,7 +72,9 @@ parallelization_factor: <1.0-5.0>
 - Efficiency gain: <pct>%
 ```
 
-**Output**: "✅ Analysis complete for issue #<N> — N parallel streams identified. Ready to start? Say: start issue <N>"
+**After writing**: Launch revdiff for inline review of the analysis. Read `references/revdiff-review.md` and follow the review loop with `.claude/epics/<epic_name>/<N>-analysis.md`. Process all annotations, update the analysis, and re-launch until the user quits without annotations.
+
+**After approval**: "✅ Analysis approved for issue #<N> — N parallel streams identified. Ready to start? Say: start issue <N>"
 
 ---
 

@@ -95,7 +95,9 @@ Sequential tasks: N
 Estimated total effort: N hours
 ```
 
-**After completion**: Confirm "✅ Created N tasks for epic: <name>" and suggest: "Ready to push to GitHub? Say: sync the <name> epic"
+**After writing**: Launch revdiff for inline review of the epic file (which now includes the "Tasks Created" summary). Read `references/revdiff-review.md` and follow the review loop with `.claude/epics/<name>/epic.md`. If the user wants to review individual tasks, run additional review loops with `--only=.claude/epics/<name>/<N>.md` for specific task files. Process all annotations, update files, and re-launch until the user quits without annotations.
+
+**After approval**: Confirm "✅ Tasks approved for epic: <name>" and suggest: "Ready to push to GitHub? Say: sync the <name> epic"
 
 ---
 

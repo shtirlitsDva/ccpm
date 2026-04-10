@@ -57,7 +57,9 @@ created: <run: date -u +"%Y-%m-%dT%H:%M:%SZ">
 - Success criteria are measurable
 - Out of scope is explicitly listed
 
-**After creation**: Confirm "✅ PRD created: `.claude/prds/<name>.md`" and suggest: "Ready to create technical epic? Say: parse the <name> PRD"
+**After writing**: Launch revdiff for inline review. Read `references/revdiff-review.md` and follow the review loop with `.claude/prds/<name>.md`. Process all annotations, update the PRD, and re-launch until the user quits without annotations.
+
+**After approval**: Confirm "✅ PRD approved: `.claude/prds/<name>.md`" and suggest: "Ready to create technical epic? Say: parse the <name> PRD"
 
 ---
 
@@ -103,7 +105,9 @@ github: (will be set on sync)
 - Look for ways to leverage existing functionality before creating new code.
 - Identify parallelization opportunities in the task breakdown preview.
 
-**After creation**: Confirm "✅ Epic created: `.claude/epics/<name>/epic.md`" and suggest: "Ready to decompose into tasks? Say: decompose the <name> epic"
+**After writing**: Launch revdiff for inline review. Read `references/revdiff-review.md` and follow the review loop with `.claude/epics/<name>/epic.md`. Process all annotations, update the epic, and re-launch until the user quits without annotations.
+
+**After approval**: Confirm "✅ Epic approved: `.claude/epics/<name>/epic.md`" and suggest: "Ready to decompose into tasks? Say: decompose the <name> epic"
 
 ---
 
