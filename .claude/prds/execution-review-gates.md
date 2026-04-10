@@ -146,7 +146,7 @@ As a developer, I want to be the final arbiter when the implementing agent and t
 </out-of-scope>
 
 <dependencies>
-- `/codex-agent` skill must be functional (codex-cli installed, authenticated)
+- `/codex-agent` skill must be functional (Codex plugin from openai/codex-plugin-cc installed and authenticated)
 - `codex:codex-rescue` subagent type must be available
 - Existing Execute phase workflow in `references/execute.md`
 - Existing file conventions in `references/conventions.md`

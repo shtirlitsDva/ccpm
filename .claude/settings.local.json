@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sed -i 's|^github: \\(will be set on sync\\)|github: https://github.com/shtirlitsDva/ccpm/issues/2|' __TRACKED_VAR__/001.md)",
+      "Bash(sed -i 's|^updated: .*|updated: __TRACKED_VAR__|' __TRACKED_VAR__/001.md)",
+      "Bash(sed -i 's|depends_on: \\\\[001\\\\]|depends_on: [2]|' __TRACKED_VAR__/002.md)",
+      "Bash(sed -i 's|^github: \\(will be set on sync\\)|github: https://github.com/shtirlitsDva/ccpm/issues/3|' __TRACKED_VAR__/002.md)",
+      "Bash(sed -i 's|^updated: .*|updated: __TRACKED_VAR__|' __TRACKED_VAR__/002.md)",
+      "Bash(sed -i \"s|^status: in-progress|status: completed|\" H:/GitHub/ccpm/.claude/epics/execution-review-gates/epic.md)",
+      "Bash(sed -i \"s|^progress: 0%|progress: 100%|\" H:/GitHub/ccpm/.claude/epics/execution-review-gates/epic.md)",
+      "Bash(sed -i 's|^updated: .*|updated: __TRACKED_VAR__|' H:/GitHub/ccpm/.claude/epics/execution-review-gates/epic.md)",
+      "Bash(sed -i \"s|^status: open|status: closed|\" H:/GitHub/ccpm/.claude/epics/execution-review-gates/2.md)",
+      "Bash(sed -i \"s|^status: open|status: closed|\" H:/GitHub/ccpm/.claude/epics/execution-review-gates/3.md)",
+      "Bash(mkdir -p H:/GitHub/ccpm/.claude/epics/archived)",
+      "Bash(mv H:/GitHub/ccpm/.claude/epics/execution-review-gates H:/GitHub/ccpm/.claude/epics/archived/)"
+    ]
+  }
+}
