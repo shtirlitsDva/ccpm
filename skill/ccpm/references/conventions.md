@@ -15,8 +15,14 @@ Read this before doing any file operations across all phases.
 │   │   ├── epic.md                # Technical epic
 │   │   ├── <N>.md                 # Task files (named by GitHub issue number after sync)
 │   │   ├── <N>-analysis.md        # Parallel work stream analysis
+│   │   ├── <N>-context-brief.md   # Compiled context for subagent consumption
 │   │   ├── github-mapping.md      # Issue number → URL mapping
 │   │   ├── execution-status.md    # Active agents tracker
+│   │   ├── reviews/
+│   │   │   ├── <N>-context-review.md       # Gate 1: context brief review
+│   │   │   ├── <N>-stream-<X>-review.md    # Gate 2: per-stream review
+│   │   │   ├── <N>-integration-review.md   # Gate 3: cross-stream review
+│   │   │   └── <N>-wave-gate-<dep_N>-review.md  # Gate 4: wave gate review
 │   │   └── updates/
 │   │       └── <issue_N>/
 │   │           ├── stream-A.md    # Per-agent progress
@@ -75,6 +81,33 @@ issue: <N>
 started: <ISO 8601>
 last_sync: <ISO 8601>
 completion: 0%
+---
+```
+
+### Context Brief (.claude/epics/<name>/<N>-context-brief.md)
+```yaml
+---
+issue: <N>
+compiled: <ISO 8601>
+sources:
+  prd: .claude/prds/<name>.md
+  epic: .claude/epics/<name>/epic.md
+  task: .claude/epics/<name>/<N>.md
+  analysis: .claude/epics/<name>/<N>-analysis.md
+---
+```
+
+### Review Artifact (.claude/epics/<name>/reviews/<N>-*-review.md)
+```yaml
+---
+gate: context-review | stream-review | integration-review | wave-gate
+issue: <N>
+stream: <X>              # only for stream-review gate
+dependency: <dep_N>      # only for wave-gate
+reviewer: codex
+effort: <level used>     # adaptive per review
+verdict: pass | fail | escalated
+reviewed: <ISO 8601>
 ---
 ```
 
