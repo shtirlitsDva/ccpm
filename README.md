@@ -161,7 +161,7 @@ All running **simultaneously** in the same worktree.
 
 ### Context Stays Clean
 
-Each agent handles its own context in isolation. Your main conversation becomes the conductor — it never drowns in implementation details. Agents read from `.claude/epics/` and commit progress back through Git.
+Each agent handles its own context in isolation. Your main conversation becomes the conductor — it never drowns in implementation details. Agents read from `.ccpm/epics/` and commit progress back through Git.
 
 ---
 
@@ -245,9 +245,9 @@ CCPM activates automatically when your agent detects PM intent. Just talk natura
 "I want to build a notification system — push, email, and in-app"
 ```
 
-CCPM conducts guided brainstorming before writing anything. It asks about the problem, users, success criteria, constraints, and what's out of scope — then creates a structured PRD at `.claude/prds/<name>.md`.
+CCPM conducts guided brainstorming before writing anything. It asks about the problem, users, success criteria, constraints, and what's out of scope — then creates a structured PRD at `.ccpm/prds/<name>.md`.
 
-When ready: "parse the notification-system PRD" → produces a technical epic at `.claude/epics/notification-system/epic.md` with architecture decisions, technical approach, and task preview.
+When ready: "parse the notification-system PRD" → produces a technical epic at `.ccpm/epics/notification-system/epic.md` with architecture decisions, technical approach, and task preview.
 
 ### 2. Structure — Break it down
 
@@ -279,7 +279,7 @@ Analyzes the issue for independent work streams, launches parallel agents scoped
 "standup" / "what's blocked" / "what's next"
 ```
 
-All tracking operations run as bash scripts — instant output, no LLM overhead. The scripts scan `.claude/epics/` and report what's in progress, what's next, and what's blocked.
+All tracking operations run as bash scripts — instant output, no LLM overhead. The scripts scan `.ccpm/epics/` and report what's in progress, what's next, and what's blocked.
 
 ---
 
@@ -303,10 +303,10 @@ skill/ccpm/
         └── ...               # 14 scripts total
 ```
 
-Your project files live in `.claude/` in your project root:
+Your project files live in `.ccpm/` in your project root:
 
 ```
-.claude/
+.ccpm/
 ├── prds/                     # Product requirement documents
 ├── epics/
 │   └── <feature>/
@@ -316,6 +316,8 @@ Your project files live in `.claude/` in your project root:
 │       └── updates/          # Agent progress tracking
 └── (archived epics)
 ```
+
+Note: `.ccpm/` is a sibling to `.claude/`, not inside it. Claude Code hard-protects `.claude/` from writes even under `--dangerously-skip-permissions`, so CCPM keeps its runtime artifacts in a separate top-level directory.
 
 Files are the source of truth — plain markdown that lives in your repo, no external services.
 
@@ -330,12 +332,12 @@ CCPM: Asks 5 clarifying questions about scope, users, success criteria...
 
 You: [answers]
 
-CCPM: ✅ PRD created: .claude/prds/payment-integration.md
+CCPM: ✅ PRD created: .ccpm/prds/payment-integration.md
       Ready to create the technical epic?
 
 You: "yes, parse it"
 
-CCPM: ✅ Epic created: .claude/epics/payment-integration/epic.md
+CCPM: ✅ Epic created: .ccpm/epics/payment-integration/epic.md
       8 task categories identified. Ready to decompose?
 
 You: "break it down"

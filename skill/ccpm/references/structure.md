@@ -9,7 +9,7 @@ This phase converts a technical epic into concrete, numbered task files with dep
 **Trigger**: User wants to break an epic into actionable tasks.
 
 ### Preflight
-- Verify `.claude/epics/<name>/epic.md` exists with valid frontmatter.
+- Verify `.ccpm/epics/<name>/epic.md` exists with valid frontmatter.
 - If numbered task files (001.md, 002.md...) already exist in the epic directory, list them and confirm deletion before recreating.
 - If epic status is "completed", warn the user before proceeding.
 
@@ -38,7 +38,7 @@ Task:
   prompt: |
     Create task files for epic: <name>
     Tasks to create: [list 3-4 tasks]
-    Save to: .claude/epics/<name>/001.md, 002.md, etc.
+    Save to: .ccpm/epics/<name>/001.md, 002.md, etc.
     Follow the task file format exactly.
     Return: list of files created.
 ```
@@ -97,7 +97,7 @@ Estimated total effort: N hours
 
 **Before writing**: Tell the user: "Accept the file write — we'll review it with revdiff right after."
 
-**After writing**: Launch revdiff for inline review of the epic file (which now includes the "Tasks Created" summary). Read `references/revdiff-review.md` and follow the review loop with `.claude/epics/<name>/epic.md`. If the user wants to review individual tasks, run additional review loops with `--only=.claude/epics/<name>/<N>.md` for specific task files. Process all annotations, update files, and re-launch until the user quits without annotations.
+**After writing**: Launch revdiff for inline review of the epic file (which now includes the "Tasks Created" summary). Read `references/revdiff-review.md` and follow the review loop with `.ccpm/epics/<name>/epic.md`. If the user wants to review individual tasks, run additional review loops with `--only=.ccpm/epics/<name>/<N>.md` for specific task files. Process all annotations, update files, and re-launch until the user quits without annotations.
 
 **After approval**: Confirm "✅ Tasks approved for epic: <name>" and suggest: "Ready to push to GitHub? Say: sync the <name> epic"
 

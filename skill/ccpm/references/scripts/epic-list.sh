@@ -3,8 +3,8 @@ echo "Getting epics..."
 echo ""
 echo ""
 
-[ ! -d ".claude/epics" ] && echo "📁 No epics directory found. Create your first epic with: /pm:prd-parse <feature-name>" && exit 0
-[ -z "$(ls -d .claude/epics/*/ 2>/dev/null)" ] && echo "📁 No epics found. Create your first epic with: /pm:prd-parse <feature-name>" && exit 0
+[ ! -d ".ccpm/epics" ] && echo "📁 No epics directory found. Create your first epic with: /pm:prd-parse <feature-name>" && exit 0
+[ -z "$(ls -d .ccpm/epics/*/ 2>/dev/null)" ] && echo "📁 No epics found. Create your first epic with: /pm:prd-parse <feature-name>" && exit 0
 
 echo "📚 Project Epics"
 echo "================"
@@ -16,7 +16,7 @@ in_progress_epics=""
 completed_epics=""
 
 # Process all epics
-for dir in .claude/epics/*/; do
+for dir in .ccpm/epics/*/; do
   [ -d "$dir" ] || continue
   [ -f "$dir/epic.md" ] || continue
 
@@ -86,8 +86,8 @@ fi
 # Summary
 echo ""
 echo "📊 Summary"
-total=$(ls -d .claude/epics/*/ 2>/dev/null | wc -l)
-tasks=$(find .claude/epics -name "[0-9]*.md" 2>/dev/null | wc -l)
+total=$(ls -d .ccpm/epics/*/ 2>/dev/null | wc -l)
+tasks=$(find .ccpm/epics -name "[0-9]*.md" 2>/dev/null | wc -l)
 echo "   Total epics: $total"
 echo "   Total tasks: $tasks"
 

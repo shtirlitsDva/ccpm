@@ -4,7 +4,7 @@ status: completed
 created: 2026-04-10T19:15:53Z
 updated: 2026-04-10T21:07:13Z
 progress: 100%
-prd: .claude/prds/execution-review-gates.md
+prd: .ccpm/prds/execution-review-gates.md
 github: https://github.com/shtirlitsDva/ccpm/issues/1
 ---
 
@@ -32,7 +32,7 @@ All reviews use the `/codex-agent` skill pattern — spawning `codex:codex-rescu
 Instead of bloating the subagent prompt with all context, we compile a `<N>-context-brief.md` file that subagents read. This keeps prompts manageable while ensuring context is available and reviewable.
 
 **AD-4: Review artifacts persist in a reviews/ subdirectory**
-All review outputs go to `.claude/epics/<epic>/reviews/`. Each review produces a file with consistent frontmatter (gate type, verdict, timestamp). This provides traceability without cluttering the main epic directory.
+All review outputs go to `.ccpm/epics/<epic>/reviews/`. Each review produces a file with consistent frontmatter (gate type, verdict, timestamp). This provides traceability without cluttering the main epic directory.
 
 **AD-5: Escalation is a protocol, not a tool**
 When Codex review fails, the orchestrating Claude presents both perspectives (reviewer findings + implementer reasoning) to the user. The user decides. Decision is recorded in the review artifact. No special tooling needed — it's a workflow pattern documented in execute.md.
@@ -86,10 +86,10 @@ Gate 4: Wave gate review (NEW)
 issue: <N>
 compiled: <ISO 8601>
 sources:
-  prd: .claude/prds/<name>.md
-  epic: .claude/epics/<epic>/epic.md
-  task: .claude/epics/<epic>/<N>.md
-  analysis: .claude/epics/<epic>/<N>-analysis.md
+  prd: .ccpm/prds/<name>.md
+  epic: .ccpm/epics/<epic>/epic.md
+  task: .ccpm/epics/<epic>/<N>.md
+  analysis: .ccpm/epics/<epic>/<N>-analysis.md
 ---
 
 # Context Brief: Issue #<N>

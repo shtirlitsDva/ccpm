@@ -25,7 +25,7 @@ REPO=$(echo "$remote_url" | sed 's|.*github.com[:/]||' | sed 's|\.git$||')
 **Trigger**: User wants to push a local epic and its tasks to GitHub as issues.
 
 ### Preflight
-- Verify `.claude/epics/<name>/epic.md` exists.
+- Verify `.ccpm/epics/<name>/epic.md` exists.
 - Verify numbered task files exist — if none: "❌ No tasks to sync. Decompose the epic first."
 
 ### Process
@@ -34,7 +34,7 @@ REPO=$(echo "$remote_url" | sed 's|.*github.com[:/]||' | sed 's|\.git$||')
 
 Strip frontmatter from epic.md, then:
 ```bash
-sed '1,/^---$/d; 1,/^---$/d' .claude/epics/<name>/epic.md > /tmp/epic-body.md
+sed '1,/^---$/d; 1,/^---$/d' .ccpm/epics/<name>/epic.md > /tmp/epic-body.md
 epic_number=$(gh issue create \
   --repo "$REPO" \
   --title "Epic: <name>" \
@@ -123,12 +123,12 @@ Synced: <datetime>
 
 ### Preflight
 - Verify issue exists: `gh issue view <N> --json state`
-- Check `.claude/epics/*/updates/<N>/` exists with a `progress.md` file.
+- Check `.ccpm/epics/*/updates/<N>/` exists with a `progress.md` file.
 - Check `last_sync` in progress.md — if synced <5 minutes ago, confirm before proceeding.
 
 ### Process
 
-Gather updates from `.claude/epics/<epic>/updates/<N>/` (progress.md, notes.md, commits.md).
+Gather updates from `.ccpm/epics/<epic>/updates/<N>/` (progress.md, notes.md, commits.md).
 
 Format and post a comment:
 ```bash
@@ -165,7 +165,7 @@ Add sync marker to local files to prevent duplicate comments:
 
 ### Process
 
-1. Find the local task file (`.claude/epics/*/<N>.md`).
+1. Find the local task file (`.ccpm/epics/*/<N>.md`).
 2. Update frontmatter: `status: closed`, `updated: <now>`.
 3. Post completion comment:
 ```bash
@@ -209,11 +209,11 @@ git branch -d epic/<name>
 git push origin --delete epic/<name>
 
 # Archive
-mkdir -p .claude/epics/archived/
-mv .claude/epics/<name> .claude/epics/archived/
+mkdir -p .ccpm/epics/archived/
+mv .ccpm/epics/<name> .ccpm/epics/archived/
 
 # Close GitHub issues
-epic_issue=$(grep 'github:' .claude/epics/archived/<name>/epic.md | grep -oE '[0-9]+$')
+epic_issue=$(grep 'github:' .ccpm/epics/archived/<name>/epic.md | grep -oE '[0-9]+$')
 gh issue close $epic_issue -c "Epic completed and merged to main"
 ```
 
@@ -233,7 +233,7 @@ The workflow should stay automated: create a linked bug task without losing cont
 ```bash
 gh issue view <original_N> --json title,body,labels
 ```
-Also read the local task file if it exists: `.claude/epics/*/<original_N>.md`
+Also read the local task file if it exists: `.ccpm/epics/*/<original_N>.md`
 
 **Step 2 — Create a local bug task file:**
 
@@ -273,7 +273,7 @@ Found while working on / testing issue #<original_N>: <original title>
 - Size: XS/S
 ```
 
-Save to `.claude/epics/<same_epic_as_original>/bug-<original_N>-<slug>.md`
+Save to `.ccpm/epics/<same_epic_as_original>/bug-<original_N>-<slug>.md`
 
 **Step 3 — Create a linked GitHub issue:**
 ```bash

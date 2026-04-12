@@ -9,8 +9,8 @@ This phase turns an idea into a structured PRD, then converts the PRD into a tec
 **Trigger**: User wants to plan a new feature, product requirement, or area of work.
 
 ### Preflight
-- Check if `.claude/prds/<name>.md` already exists — if so, confirm overwrite before proceeding.
-- Ensure `.claude/prds/` directory exists; create it if not.
+- Check if `.ccpm/prds/<name>.md` already exists — if so, confirm overwrite before proceeding.
+- Ensure `.ccpm/prds/` directory exists; create it if not.
 - Feature name must be kebab-case (lowercase, letters/numbers/hyphens, starts with a letter). If not: "❌ Feature name must be kebab-case. Example: user-auth, payment-v2"
 
 ### Process
@@ -28,7 +28,7 @@ Ask the questions one at a time.
 
 If a question can be answered by exploring the codebase, explore the codebase instead.
 
-Then write `.claude/prds/<name>.md` with this frontmatter and structure:
+Then write `.ccpm/prds/<name>.md` with this frontmatter and structure:
 
 ```markdown
 ---
@@ -57,11 +57,17 @@ created: <run: date -u +"%Y-%m-%dT%H:%M:%SZ">
 - Success criteria are measurable
 - Out of scope is explicitly listed
 
-**Before writing**: Tell the user: "Accept the file write — we'll review it with revdiff right after."
+**Before writing**: Enter plan mode if not already in it (call `EnterPlanMode`).
 
-**After writing**: Launch revdiff for inline review. Read `references/revdiff-review.md` and follow the review loop with `.claude/prds/<name>.md`. Process all annotations, update the PRD, and re-launch until the user quits without annotations.
+**Write PRD as plan**: Write the full PRD content — frontmatter + all required sections — to the plan file provided by the plan mode context. Apply all quality gates before writing: no placeholder text, user stories include acceptance criteria, success criteria are measurable, out of scope is explicitly listed.
 
-**After approval**: Confirm "✅ PRD approved: `.claude/prds/<name>.md`" and suggest: "Ready to create technical epic? Say: parse the <name> PRD"
+**Review loop via ExitPlanMode**: Call `ExitPlanMode`.
+- If `ExitPlanMode` **errors**: the hook captured revdiff annotations and returned them as the error payload. Read each annotation, incorporate the requested changes into the plan file, then call `ExitPlanMode` again. Repeat until `ExitPlanMode` succeeds.
+- If `ExitPlanMode` **succeeds**: the user quit revdiff without annotations — PRD is approved.
+
+**Write the PRD file**: Copy the approved plan content to `.ccpm/prds/<name>.md`. Do not prompt the user to accept this write — it is a direct copy of already-approved content.
+
+**After approval**: Confirm "✅ PRD approved: `.ccpm/prds/<name>.md`" and suggest: "Ready to create technical epic? Say: parse the <name> PRD"
 
 ---
 
@@ -70,12 +76,12 @@ created: <run: date -u +"%Y-%m-%dT%H:%M:%SZ">
 **Trigger**: User wants to convert an existing PRD into a technical implementation plan.
 
 ### Preflight
-- Verify `.claude/prds/<name>.md` exists with valid frontmatter (name, description, status, created).
-- Check if `.claude/epics/<name>/epic.md` already exists — confirm overwrite if so.
+- Verify `.ccpm/prds/<name>.md` exists with valid frontmatter (name, description, status, created).
+- Check if `.ccpm/epics/<name>/epic.md` already exists — confirm overwrite if so.
 
 ### Process
 
-Read the PRD fully, then produce `.claude/epics/<name>/epic.md`:
+Read the PRD fully, then produce `.ccpm/epics/<name>/epic.md`:
 
 ```markdown
 ---
@@ -83,7 +89,7 @@ name: <feature-name>
 status: backlog
 created: <run: date -u +"%Y-%m-%dT%H:%M:%SZ">
 progress: 0%
-prd: .claude/prds/<name>.md
+prd: .ccpm/prds/<name>.md
 github: (will be set on sync)
 ---
 
@@ -109,9 +115,9 @@ github: (will be set on sync)
 
 **Before writing**: Tell the user: "Accept the file write — we'll review it with revdiff right after."
 
-**After writing**: Launch revdiff for inline review. Read `references/revdiff-review.md` and follow the review loop with `.claude/epics/<name>/epic.md`. Process all annotations, update the epic, and re-launch until the user quits without annotations.
+**After writing**: Launch revdiff for inline review. Read `references/revdiff-review.md` and follow the review loop with `.ccpm/epics/<name>/epic.md`. Process all annotations, update the epic, and re-launch until the user quits without annotations.
 
-**After approval**: Confirm "✅ Epic approved: `.claude/epics/<name>/epic.md`" and suggest: "Ready to decompose into tasks? Say: decompose the <name> epic"
+**After approval**: Confirm "✅ Epic approved: `.ccpm/epics/<name>/epic.md`" and suggest: "Ready to decompose into tasks? Say: decompose the <name> epic"
 
 ---
 

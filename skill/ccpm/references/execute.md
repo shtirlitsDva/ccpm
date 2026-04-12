@@ -9,7 +9,7 @@ This phase covers analyzing GitHub issues for parallel work streams and launchin
 **Trigger**: User wants to understand how to parallelize work on an issue before starting.
 
 ### Preflight
-- Find the local task file: check `.claude/epics/*/<N>.md` first, then search for `github:.*issues/<N>` in frontmatter.
+- Find the local task file: check `.ccpm/epics/*/<N>.md` first, then search for `github:.*issues/<N>` in frontmatter.
 - If not found: "❌ No local task for issue #<N>. Run a sync first."
 
 ### Process
@@ -28,7 +28,7 @@ Read the local task file fully. Identify independent work streams by asking:
 - UI Layer: components, pages, styles
 - Test Layer: unit tests, integration tests
 
-Create `.claude/epics/<epic_name>/<N>-analysis.md`:
+Create `.ccpm/epics/<epic_name>/<N>-analysis.md`:
 
 ```markdown
 ---
@@ -74,7 +74,7 @@ parallelization_factor: <1.0-5.0>
 
 **Before writing**: Tell the user: "Accept the file write — we'll review it with revdiff right after."
 
-**After writing**: Launch revdiff for inline review of the analysis. Read `references/revdiff-review.md` and follow the review loop with `.claude/epics/<epic_name>/<N>-analysis.md`. Process all annotations, update the analysis, and re-launch until the user quits without annotations.
+**After writing**: Launch revdiff for inline review of the analysis. Read `references/revdiff-review.md` and follow the review loop with `.ccpm/epics/<epic_name>/<N>-analysis.md`. Process all annotations, update the analysis, and re-launch until the user quits without annotations.
 
 **After approval**: "✅ Analysis approved for issue #<N> — N parallel streams identified. Ready to start? Say: start issue <N>"
 
@@ -87,7 +87,7 @@ parallelization_factor: <1.0-5.0>
 ### Preflight
 1. Verify issue exists and is open: `gh issue view <N> --json state,title,labels,body`
 2. Find local task file (as above).
-3. Check for analysis file: `.claude/epics/*/<N>-analysis.md` — if missing, run analysis first (or do both in sequence: analyze then start).
+3. Check for analysis file: `.ccpm/epics/*/<N>-analysis.md` — if missing, run analysis first (or do both in sequence: analyze then start).
 4. Verify epic worktree exists: `git worktree list | grep "epic-<name>"` — if not: "❌ No worktree. Sync the epic first."
 
 ### Process
@@ -96,12 +96,12 @@ parallelization_factor: <1.0-5.0>
 
 **Step 2 — Generate context brief:**
 
-Read the following sources and compile into `.claude/epics/<epic>/<N>-context-brief.md`:
+Read the following sources and compile into `.ccpm/epics/<epic>/<N>-context-brief.md`:
 
 - **PRD**: Read the PRD linked in epic frontmatter (`prd:` field). Extract: problem statement, relevant user stories, functional requirements for this task, constraints, out-of-scope items.
-- **Epic architecture**: Read `.claude/epics/<epic>/epic.md`. Extract: architecture decisions, technical approach sections relevant to this task.
+- **Epic architecture**: Read `.ccpm/epics/<epic>/epic.md`. Extract: architecture decisions, technical approach sections relevant to this task.
 - **Project conventions**: Read `CLAUDE.md` from project root if present. Extract: coding patterns, naming conventions, directory structure rules, any project-specific instructions.
-- **Cross-task context**: Read sibling task files in `.claude/epics/<epic>/`. For each sibling, note: what it produces, what it consumes, shared interfaces or files, coordination points with this task.
+- **Cross-task context**: Read sibling task files in `.ccpm/epics/<epic>/`. For each sibling, note: what it produces, what it consumes, shared interfaces or files, coordination points with this task.
 - **Analysis context**: Include key points from `<N>-analysis.md` — stream structure, coordination points, conflict risks.
 
 ```markdown
@@ -109,10 +109,10 @@ Read the following sources and compile into `.claude/epics/<epic>/<N>-context-br
 issue: <N>
 compiled: <run: date -u +"%Y-%m-%dT%H:%M:%SZ">
 sources:
-  prd: .claude/prds/<name>.md
-  epic: .claude/epics/<epic>/epic.md
-  task: .claude/epics/<epic>/<N>.md
-  analysis: .claude/epics/<epic>/<N>-analysis.md
+  prd: .ccpm/prds/<name>.md
+  epic: .ccpm/epics/<epic>/epic.md
+  task: .ccpm/epics/<epic>/<N>.md
+  analysis: .ccpm/epics/<epic>/<N>-analysis.md
 ---
 
 # Context Brief: Issue #<N>
@@ -142,12 +142,12 @@ Task:
   subagent_type: "codex:codex-rescue"
   description: "Gate 1: context brief review #<N>"
   prompt: |
-    Review the context brief for Issue #<N> at: .claude/epics/<epic>/<N>-context-brief.md
+    Review the context brief for Issue #<N> at: .ccpm/epics/<epic>/<N>-context-brief.md
 
     Cross-reference against:
     - PRD at: <prd_path>
-    - Epic at: .claude/epics/<epic>/epic.md
-    - Task spec at: .claude/epics/<epic>/<N>.md
+    - Epic at: .ccpm/epics/<epic>/epic.md
+    - Task spec at: .ccpm/epics/<epic>/<N>.md
 
     Check:
     1. Are all relevant PRD requirements for this task captured?
@@ -156,7 +156,7 @@ Task:
     4. Is cross-task context complete — does the brief mention what sibling tasks produce/consume?
     5. Are there any contradictions between the brief and the source documents?
 
-    Write your review to: .claude/epics/<epic>/reviews/<N>-context-review.md
+    Write your review to: .ccpm/epics/<epic>/reviews/<N>-context-review.md
     Use this frontmatter:
     ---
     gate: context-review
@@ -175,18 +175,18 @@ Task:
 ```
 
 ```bash
-mkdir -p .claude/epics/<epic>/reviews
+mkdir -p .ccpm/epics/<epic>/reviews
 ```
 
 **If Gate 1 fails**: Read the review findings. Fix the context brief to address the gaps. Re-run Gate 1. If the orchestrator believes the findings are incorrect, follow the Escalation Protocol (see below).
 
 **Step 4 — Create progress tracking:**
 ```bash
-mkdir -p .claude/epics/<epic>/updates/<N>
+mkdir -p .ccpm/epics/<epic>/updates/<N>
 current_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 ```
 
-Create `.claude/epics/<epic>/updates/<N>/stream-<X>.md` for each stream:
+Create `.ccpm/epics/<epic>/updates/<N>/stream-<X>.md` for each stream:
 ```markdown
 ---
 issue: <N>
@@ -213,10 +213,10 @@ Task:
     Work to complete: <stream_description>
     
     CRITICAL — Read these files before writing any code:
-    1. Context brief (full project context): .claude/epics/<epic>/<N>-context-brief.md
-    2. Full task spec: .claude/epics/<epic>/<N>.md
-    3. Stream analysis: .claude/epics/<epic>/<N>-analysis.md
-    4. Epic architecture decisions: .claude/epics/<epic>/epic.md — read the Architecture Decisions section
+    1. Context brief (full project context): .ccpm/epics/<epic>/<N>-context-brief.md
+    2. Full task spec: .ccpm/epics/<epic>/<N>.md
+    3. Stream analysis: .ccpm/epics/<epic>/<N>-analysis.md
+    4. Epic architecture decisions: .ccpm/epics/<epic>/epic.md — read the Architecture Decisions section
     5. PRD (requirements & constraints): <prd_path>
     6. Project conventions: CLAUDE.md (if present in project root)
     
@@ -225,7 +225,7 @@ Task:
     2. Follow project conventions from CLAUDE.md — naming, patterns, structure
     3. Work ONLY in your assigned files
     4. Commit frequently: "Issue #<N>: <specific change>"
-    5. Update progress in: .claude/epics/<epic>/updates/<N>/stream-<X>.md
+    5. Update progress in: .ccpm/epics/<epic>/updates/<N>/stream-<X>.md
     6. If you need to touch files outside your scope, note it in your progress file and wait
     7. Never use --force on git operations
     
@@ -252,9 +252,9 @@ Task:
 
     Read:
     - The diff at: /tmp/stream-<X>-diff.txt (or run: git -C ../epic-<name> diff <base>..HEAD -- <stream_files>)
-    - Task spec at: .claude/epics/<epic>/<N>.md
-    - Context brief at: .claude/epics/<epic>/<N>-context-brief.md
-    - Epic architecture at: .claude/epics/<epic>/epic.md
+    - Task spec at: .ccpm/epics/<epic>/<N>.md
+    - Context brief at: .ccpm/epics/<epic>/<N>-context-brief.md
+    - Epic architecture at: .ccpm/epics/<epic>/epic.md
 
     Check:
     1. Does the implementation satisfy the task's acceptance criteria relevant to this stream?
@@ -263,7 +263,7 @@ Task:
     4. Are there any issues with code quality, missing error handling at boundaries, or obvious bugs?
     5. Does it stay within the stream's assigned file scope?
 
-    Write your review to: .claude/epics/<epic>/reviews/<N>-stream-<X>-review.md
+    Write your review to: .ccpm/epics/<epic>/reviews/<N>-stream-<X>-review.md
     Use this frontmatter:
     ---
     gate: stream-review
@@ -297,10 +297,10 @@ Task:
 
     Read:
     - Combined diff: run git -C ../epic-<name> diff main..HEAD (or the relevant range for this issue's commits)
-    - All stream review files in: .claude/epics/<epic>/reviews/<N>-stream-*-review.md
-    - Task spec at: .claude/epics/<epic>/<N>.md
-    - Context brief at: .claude/epics/<epic>/<N>-context-brief.md
-    - Epic architecture at: .claude/epics/<epic>/epic.md
+    - All stream review files in: .ccpm/epics/<epic>/reviews/<N>-stream-*-review.md
+    - Task spec at: .ccpm/epics/<epic>/<N>.md
+    - Context brief at: .ccpm/epics/<epic>/<N>-context-brief.md
+    - Epic architecture at: .ccpm/epics/<epic>/epic.md
 
     Check:
     1. Do the streams integrate coherently? No conflicting patterns, duplicate logic, or inconsistent interfaces.
@@ -308,7 +308,7 @@ Task:
     3. Does the combined result satisfy ALL acceptance criteria from the task spec?
     4. Are there any integration gaps — things that fall between streams that nobody implemented?
 
-    Write your review to: .claude/epics/<epic>/reviews/<N>-integration-review.md
+    Write your review to: .ccpm/epics/<epic>/reviews/<N>-integration-review.md
     Use this frontmatter:
     ---
     gate: integration-review
@@ -333,7 +333,7 @@ Task:
 gh issue edit <N> --add-assignee @me --add-label "in-progress"
 ```
 
-**Step 9 — Create execution status file** at `.claude/epics/<epic>/updates/<N>/execution.md`:
+**Step 9 — Create execution status file** at `.ccpm/epics/<epic>/updates/<N>/execution.md`:
 ```markdown
 ## Active Streams
 - Stream A: <name> — Started <time>
@@ -365,7 +365,7 @@ Review gates active:
   Gate 2 (per-stream): will run on stream completion
   Gate 3 (integration): will run after all streams pass
 
-Monitor: check progress in .claude/epics/<epic>/updates/<N>/
+Monitor: check progress in .ccpm/epics/<epic>/updates/<N>/
 Sync updates: "sync issue <N>"
 ```
 
@@ -376,13 +376,13 @@ Sync updates: "sync issue <N>"
 **Trigger**: User wants to launch parallel agents across all ready issues in an epic at once.
 
 ### Preflight
-- Verify `.claude/epics/<name>/epic.md` exists and has a `github:` field (i.e., it's been synced).
+- Verify `.ccpm/epics/<name>/epic.md` exists and has a `github:` field (i.e., it's been synced).
 - Check for uncommitted changes: `git status --porcelain` — block if dirty.
 - Verify epic branch exists: `git branch -a | grep "epic/<name>"`
 
 ### Process
 
-**Step 1 — Read all task files** in `.claude/epics/<name>/`. Parse frontmatter for `status`, `depends_on`, `parallel`.
+**Step 1 — Read all task files** in `.ccpm/epics/<name>/`. Parse frontmatter for `status`, `depends_on`, `parallel`.
 
 **Step 2 — Categorize tasks:**
 - Ready: status=open, no unmet depends_on
@@ -394,7 +394,7 @@ Sync updates: "sync issue <N>"
 
 **Step 4 — Launch agents** for all ready tasks following the same per-issue agent launch pattern above.
 
-**Step 5 — Create/update** `.claude/epics/<name>/execution-status.md` with all active agents and queued issues.
+**Step 5 — Create/update** `.ccpm/epics/<name>/execution-status.md` with all active agents and queued issues.
 
 **Step 6 — As agents complete**, check if blocked issues are now unblocked. Before launching newly-unblocked tasks, run Gate 4.
 
@@ -410,17 +410,17 @@ Task:
     Verify that completed work satisfies the dependency contract for a downstream task.
 
     Completed task(s):
-    - Task #<completed_N>: read spec at .claude/epics/<epic>/<completed_N>.md
-    - Integration review at: .claude/epics/<epic>/reviews/<completed_N>-integration-review.md
+    - Task #<completed_N>: read spec at .ccpm/epics/<epic>/<completed_N>.md
+    - Integration review at: .ccpm/epics/<epic>/reviews/<completed_N>-integration-review.md
     - See the actual code changes: git -C ../epic-<name> log --oneline | grep "Issue #<completed_N>"
 
     Downstream task waiting to launch:
-    - Task #<blocked_N>: read spec at .claude/epics/<epic>/<blocked_N>.md
+    - Task #<blocked_N>: read spec at .ccpm/epics/<epic>/<blocked_N>.md
     - Its depends_on includes: [<completed_N>]
 
     Also read:
-    - Epic architecture at: .claude/epics/<epic>/epic.md
-    - Context brief (if already generated): .claude/epics/<epic>/<blocked_N>-context-brief.md
+    - Epic architecture at: .ccpm/epics/<epic>/epic.md
+    - Context brief (if already generated): .ccpm/epics/<epic>/<blocked_N>-context-brief.md
 
     Check:
     1. Does the completed task's output provide the interfaces, data structures, or infrastructure that the downstream task expects?
@@ -428,7 +428,7 @@ Task:
     3. Are there any gaps — things the downstream task assumes exist but were not implemented?
     4. Are there any deviations from the epic's architecture that would cause problems for the downstream task?
 
-    Write your review to: .claude/epics/<epic>/reviews/<blocked_N>-wave-gate-<completed_N>-review.md
+    Write your review to: .ccpm/epics/<epic>/reviews/<blocked_N>-wave-gate-<completed_N>-review.md
     Use this frontmatter:
     ---
     gate: wave-gate

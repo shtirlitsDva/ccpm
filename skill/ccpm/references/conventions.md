@@ -7,37 +7,38 @@ Read this before doing any file operations across all phases.
 ## Directory Structure
 
 ```
-.claude/
+.ccpm/
 ├── prds/
 │   └── <feature-name>.md          # Product requirement documents
-├── epics/
-│   ├── <feature-name>/
-│   │   ├── epic.md                # Technical epic
-│   │   ├── <N>.md                 # Task files (named by GitHub issue number after sync)
-│   │   ├── <N>-analysis.md        # Parallel work stream analysis
-│   │   ├── <N>-context-brief.md   # Compiled context for subagent consumption
-│   │   ├── github-mapping.md      # Issue number → URL mapping
-│   │   ├── execution-status.md    # Active agents tracker
-│   │   ├── reviews/
-│   │   │   ├── <N>-context-review.md       # Gate 1: context brief review
-│   │   │   ├── <N>-stream-<X>-review.md    # Gate 2: per-stream review
-│   │   │   ├── <N>-integration-review.md   # Gate 3: cross-stream review
-│   │   │   └── <N>-wave-gate-<dep_N>-review.md  # Gate 4: wave gate review
-│   │   └── updates/
-│   │       └── <issue_N>/
-│   │           ├── stream-A.md    # Per-agent progress
-│   │           ├── progress.md    # Overall issue progress
-│   │           └── execution.md  # Execution state
-│   └── archived/
-│       └── <feature-name>/        # Completed epics
-└── context/                       # Project context docs (separate system)
+└── epics/
+    ├── <feature-name>/
+    │   ├── epic.md                # Technical epic
+    │   ├── <N>.md                 # Task files (named by GitHub issue number after sync)
+    │   ├── <N>-analysis.md        # Parallel work stream analysis
+    │   ├── <N>-context-brief.md   # Compiled context for subagent consumption
+    │   ├── github-mapping.md      # Issue number → URL mapping
+    │   ├── execution-status.md    # Active agents tracker
+    │   ├── reviews/
+    │   │   ├── <N>-context-review.md       # Gate 1: context brief review
+    │   │   ├── <N>-stream-<X>-review.md    # Gate 2: per-stream review
+    │   │   ├── <N>-integration-review.md   # Gate 3: cross-stream review
+    │   │   └── <N>-wave-gate-<dep_N>-review.md  # Gate 4: wave gate review
+    │   └── updates/
+    │       └── <issue_N>/
+    │           ├── stream-A.md    # Per-agent progress
+    │           ├── progress.md    # Overall issue progress
+    │           └── execution.md  # Execution state
+    └── archived/
+        └── <feature-name>/        # Completed epics
 ```
+
+Note: `.ccpm/` lives at the project root (sibling to `.claude/`, `src/`, etc.). Artifacts are git-trackable and meant to be committed with the code. The data root was moved out of `.claude/` because Claude Code hard-protects `.claude/` against Write/Edit even under `--dangerously-skip-permissions`.
 
 ---
 
 ## Frontmatter Schemas
 
-### PRD (.claude/prds/<name>.md)
+### PRD (.ccpm/prds/<name>.md)
 ```yaml
 ---
 name: <feature-name>        # kebab-case, matches filename
@@ -47,7 +48,7 @@ created: <ISO 8601>         # date -u +"%Y-%m-%dT%H:%M:%SZ"
 ---
 ```
 
-### Epic (.claude/epics/<name>/epic.md)
+### Epic (.ccpm/epics/<name>/epic.md)
 ```yaml
 ---
 name: <feature-name>
@@ -55,12 +56,12 @@ status: backlog | in-progress | completed
 created: <ISO 8601>
 updated: <ISO 8601>
 progress: 0%                # recalculated when tasks close
-prd: .claude/prds/<name>.md
+prd: .ccpm/prds/<name>.md
 github: https://github.com/<owner>/<repo>/issues/<N>  # set on sync
 ---
 ```
 
-### Task (.claude/epics/<name>/<N>.md)
+### Task (.ccpm/epics/<name>/<N>.md)
 ```yaml
 ---
 name: <Task Title>
@@ -74,7 +75,7 @@ conflicts_with: []          # issue numbers that touch the same files
 ---
 ```
 
-### Progress (.claude/epics/<name>/updates/<N>/progress.md)
+### Progress (.ccpm/epics/<name>/updates/<N>/progress.md)
 ```yaml
 ---
 issue: <N>
@@ -84,20 +85,20 @@ completion: 0%
 ---
 ```
 
-### Context Brief (.claude/epics/<name>/<N>-context-brief.md)
+### Context Brief (.ccpm/epics/<name>/<N>-context-brief.md)
 ```yaml
 ---
 issue: <N>
 compiled: <ISO 8601>
 sources:
-  prd: .claude/prds/<name>.md
-  epic: .claude/epics/<name>/epic.md
-  task: .claude/epics/<name>/<N>.md
-  analysis: .claude/epics/<name>/<N>-analysis.md
+  prd: .ccpm/prds/<name>.md
+  epic: .ccpm/epics/<name>/epic.md
+  task: .ccpm/epics/<name>/<N>.md
+  analysis: .ccpm/epics/<name>/<N>-analysis.md
 ---
 ```
 
-### Review Artifact (.claude/epics/<name>/reviews/<N>-*-review.md)
+### Review Artifact (.ccpm/epics/<name>/reviews/<N>-*-review.md)
 ```yaml
 ---
 gate: context-review | stream-review | integration-review | wave-gate
@@ -190,8 +191,8 @@ grep 'github:' <file> | grep -oE '[0-9]+$'
 ## Epic Progress Calculation
 
 ```bash
-total=$(ls .claude/epics/<name>/[0-9]*.md 2>/dev/null | wc -l)
-closed=$(grep -l '^status: closed' .claude/epics/<name>/[0-9]*.md 2>/dev/null | wc -l)
+total=$(ls .ccpm/epics/<name>/[0-9]*.md 2>/dev/null | wc -l)
+closed=$(grep -l '^status: closed' .ccpm/epics/<name>/[0-9]*.md 2>/dev/null | wc -l)
 progress=$((closed * 100 / total))
 ```
 

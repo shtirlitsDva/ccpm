@@ -1,5 +1,33 @@
 # CCPM Changelog
 
+## [2026-04-11] - Runtime Artifact Root Rename (Breaking)
+
+### 💥 Breaking Change
+- **Runtime data root moved from `.claude/` to `.ccpm/`**
+  - All PRDs, epics, task files, analyses, context briefs, review artifacts, progress files, and archived epics now live under `.ccpm/` at the project root (sibling to `.claude/`).
+  - **Why**: Claude Code hard-protects `.claude/` against Write/Edit operations even under `--dangerously-skip-permissions`. Only `.claude/commands/`, `.claude/agents/`, and `.claude/skills/` are carved out. Every other write under `.claude/` triggers an approval prompt per edit, making bypass mode effectively unusable for CCPM's artifact-heavy workflows (review gates, parallel worker updates, frontmatter updates).
+  - References: anthropics/claude-code#37029, anthropics/claude-code#36192, anthropics/claude-code#36168.
+
+### 🔄 Migration
+- **Automatic on next `init.sh` run.** The initializer detects legacy `.claude/{prds,epics}/` trees and:
+  - Moves them to `.ccpm/{prds,epics}/` using `git mv` (preserving history) when git-tracked, or `cp -rn` + cleanup when untracked.
+  - Rewrites embedded `.claude/{prds,epics}/` paths inside all migrated `*.md` files (frontmatter `prd:`, `epic:`, `task:`, `analysis:` fields plus any prose/shell snippets).
+  - Writes `.ccpm/.migration-complete` sentinel so re-runs are no-ops.
+- No user action required beyond running the existing init script.
+
+### 🧹 Cleanup
+- Removed dead legacy `mkdir` lines in `init.sh` for `.claude/rules`, `.claude/agents`, and `.claude/scripts/pm` (v1 leftovers from before CCPM was a skill — no code referenced them).
+- Removed the unreferenced `context/` entry from the directory-tree diagram in `conventions.md`. CCPM never managed that subtree; users who maintain a separate `.claude/context/` system are unaffected.
+- Removed `.claude/rules` existence check from `validate.sh`.
+
+### 📝 Documentation
+- Updated all skill reference docs (`conventions.md`, `plan.md`, `structure.md`, `sync.md`, `execute.md`, `track.md`) to reference `.ccpm/`.
+- Updated all 14 tracking scripts to read from `.ccpm/`.
+- Updated `README.md` with new directory tree and rationale note.
+- Preserved: `.claude/skills/ccpm` install path in `README.md` (Claude Code's own skill-install directory, unrelated to runtime artifacts) and `~/.claude` plugin-cache references in `revdiff-review.md`.
+
+---
+
 ## [2025-01-24] - Major Cleanup & Issue Resolution Release
 
 ### 🎯 Overview

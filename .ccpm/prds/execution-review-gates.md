@@ -63,19 +63,19 @@ As a developer, I want to be the final arbiter when the implementing agent and t
 **FR-1: Context Brief Generator**
 - Reads the PRD, epic, task file, analysis file, CLAUDE.md, and other task files in the same epic
 - Compiles a single `<N>-context-brief.md` with sections: Requirements Context, Architecture Decisions, Project Conventions, Cross-Task Dependencies, Key Constraints
-- Stored at `.claude/epics/<epic>/<N>-context-brief.md`
+- Stored at `.ccpm/epics/<epic>/<N>-context-brief.md`
 
 **FR-2: Pre-Execution Review Gate (Gate 1)**
 - Launches Codex via `codex:codex-rescue` to review the context brief
 - Codex checks: completeness against PRD, architecture alignment with epic, no contradictions
-- Produces `.claude/epics/<epic>/reviews/<N>-context-review.md`
+- Produces `.ccpm/epics/<epic>/reviews/<N>-context-review.md`
 - Blocking: agents cannot launch until review passes
 
 **FR-3: Post-Stream Review Gate (Gate 2)**
 - Triggered when a subagent stream marks itself complete
 - Captures the stream's git diff
 - Launches Codex to review diff against: task requirements, architecture decisions, project conventions
-- Produces `.claude/epics/<epic>/reviews/<N>-stream-<X>-review.md`
+- Produces `.ccpm/epics/<epic>/reviews/<N>-stream-<X>-review.md`
 - Blocking: stream not marked complete until review passes
 - Effort level chosen by the reviewing agent based on diff size and task complexity
 
@@ -83,14 +83,14 @@ As a developer, I want to be the final arbiter when the implementing agent and t
 - Triggered when all streams for an issue are reviewed and passed
 - Captures combined diff for the issue
 - Launches Codex to review: cross-stream coherence, integration correctness, no conflicting patterns
-- Produces `.claude/epics/<epic>/reviews/<N>-integration-review.md`
+- Produces `.ccpm/epics/<epic>/reviews/<N>-integration-review.md`
 - Blocking: issue not closed until review passes
 
 **FR-5: Wave Gate Review (Gate 4)**
 - Triggered before launching tasks that depend on just-completed tasks
 - Codex reads the completed task's output and the dependent task's requirements
 - Checks: does the completed work provide what the dependent task expects?
-- Produces `.claude/epics/<epic>/reviews/<N>-wave-gate-<dep_N>.md`
+- Produces `.ccpm/epics/<epic>/reviews/<N>-wave-gate-<dep_N>.md`
 - Blocking: dependent task does not launch until review passes
 
 **FR-6: Escalation Protocol**

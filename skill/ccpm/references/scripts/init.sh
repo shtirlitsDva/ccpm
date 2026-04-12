@@ -66,20 +66,36 @@ fi
 # Create directory structure
 echo ""
 echo "📁 Creating directory structure..."
-mkdir -p .claude/prds
-mkdir -p .claude/epics
-mkdir -p .claude/rules
-mkdir -p .claude/agents
-mkdir -p .claude/scripts/pm
+mkdir -p .ccpm/prds
+mkdir -p .ccpm/epics
 echo "  ✅ Directories created"
 
-# Copy scripts if in main repo
-if [ -d "scripts/pm" ] && [ ! "$(pwd)" = *"/.claude"* ]; then
-  echo ""
-  echo "📝 Copying PM scripts..."
-  cp -r scripts/pm/* .claude/scripts/pm/
-  chmod +x .claude/scripts/pm/*.sh
-  echo "  ✅ Scripts copied and made executable"
+# Migrate from legacy .claude/ layout (pre-permission-fix)
+# Claude Code hard-protects .claude/ from bypass mode, so CCPM artifacts moved
+# to .ccpm/ at the project root. This block auto-migrates existing data.
+if [ -d .claude/prds ] || [ -d .claude/epics ]; then
+  if [ ! -e .ccpm/.migration-complete ]; then
+    echo ""
+    echo "🔁 Migrating .claude/{prds,epics} → .ccpm/{prds,epics}"
+    if git rev-parse --git-dir >/dev/null 2>&1 \
+       && git ls-files --error-unmatch .claude/prds >/dev/null 2>&1; then
+      # Git-tracked: use git mv to preserve history
+      [ -d .claude/prds ]  && git mv .claude/prds  .ccpm/prds
+      [ -d .claude/epics ] && git mv .claude/epics .ccpm/epics
+    else
+      # Untracked: plain copy + remove (cp -n is non-destructive on conflict)
+      [ -d .claude/prds ]  && cp -rn .claude/prds/.  .ccpm/prds/  && rm -rf .claude/prds
+      [ -d .claude/epics ] && cp -rn .claude/epics/. .ccpm/epics/ && rm -rf .claude/epics
+    fi
+    # Rewrite embedded `.claude/{prds,epics}/` paths inside migrated files
+    # (covers frontmatter prd/epic/task/analysis fields, sources: blocks, and
+    # any prose/shell snippets stored in progress/update files)
+    find .ccpm -type f -name '*.md' -print0 \
+      | xargs -0 sed -i.bak 's|\.claude/prds/|.ccpm/prds/|g; s|\.claude/epics/|.ccpm/epics/|g'
+    find .ccpm -type f -name '*.bak' -delete
+    touch .ccpm/.migration-complete
+    echo "  ✅ Migration complete"
+  fi
 fi
 
 # Check for git
